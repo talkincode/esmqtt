@@ -1,0 +1,8 @@
+BuildVersion=latest v2.0.1 2023-10-31 15:58:44
+ReleaseVersion=v2.0.1
+BuildTime=2023-10-31 15:58:44
+BuildName=teamsedge
+CommitID=573757b4dbbd68e033971110a8430a0d55385334
+CommitDate=Tue, 31 Oct 2023 15:57:55 +0800
+CommitUser=jamiesun.net@gmail.com
+CommitSubject= : #15 form bind order fix

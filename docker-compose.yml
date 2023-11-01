@@ -1,0 +1,37 @@
+version: "3"
+services:
+  esmqtt:
+    image: talkincode/esmqtt:latest
+    container_name: "esmqtt"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    restart: always
+    environment:
+      - ESMQTT_SYSTEM_WORKER_DIR=/var/esmqtt
+      - ESMQTT_SYSTEM_DEBUG=false
+      - ESMQTT_ELASTIC_SERVER=https://host.docker.internal:9200
+      - ESMQTT_ELASTIC_APIKEY=${ESMQTT_ELASTIC_APIKEY}
+      - ESMQTT_MQTT_SERVER=mqtt://host.docker.internal:18915
+      - ESMQTT_MQTT_USERNAME=${ESMQTT_MQTT_USERNAME}
+      - ESMQTT_MQTT_PASSWORD=${ESMQTT_MQTT_PASSWORD}
+      - ESMQTT_MQTT_DEBUG=false
+      - ESMQTT_LOGGER_JOB=esmqtt
+      - ESMQTT_LOGGER_SERVER=
+      - ESMQTT_LOGGER_USERNAME=esmqtt
+      - ESMQTT_LOGGER_PASSWORD=
+      - ESMQTT_LOGGER_MODE=development
+      - ESMQTT_LOGGER_LOKI_ENABLE=false
+      - ESMQTT_LOGGER_FILE_ENABLE=true
+    volumes:
+      - esmqtt-volume:/var/esmqtt
+    networks:
+      esmqtt_network:
+
+
+networks:
+  esmqtt_network:
+
+volumes:
+  esmqtt-volume:
