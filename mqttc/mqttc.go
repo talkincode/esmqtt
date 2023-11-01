@@ -55,6 +55,7 @@ func startMqttDaemon() error {
 	opts.ConnectRetry = true
 	opts.AutoReconnect = true
 	opts.OnConnect = onConnect
+	opts.SetProtocolVersion(4)
 	client = mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		return token.Error()

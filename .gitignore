@@ -11,3 +11,4 @@ build
 .env
 /data/
 /tests/
+/esmqtt.yml
