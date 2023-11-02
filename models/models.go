@@ -11,9 +11,9 @@ type MessageRule struct {
 }
 
 type ElasticMessage struct {
-	ID        string          `json:"id"`
-	Index     string          `json:"index"`
+	ID        string          `json:"id,omitempty"`
+	Index     string          `json:"index,omitempty"`
 	Vector    []float32       `json:"vector,omitempty"`
 	Payload   json.RawMessage `json:"payload,omitempty"`
-	Timestamp int64           `json:"timestamp"`
+	Timestamp int64           `json:"timestamp,omitempty"`
 }
