@@ -1,17 +1,19 @@
 # Esmqtt
 
-Esmqtt 是一个 可以通过 MQTT 协议订阅接收消息并转发到 Elasticsearch 的工具。
+Esmqtt is a tool that can subscribe to receive messages through the MQTT protocol and forward them to Elasticsearch.
 
-## 功能特性
+[中文](./README-zh_CN.md)
 
-- [x] 支持 MQTT 协议 V3, V4
-- [x] 将 MQTT 消息转发到 Elasticsearch
-- [x] 支持消息规则路由， 自定义消息主题对应指定的 Elasticsearch 索引
-- [ ] 支持消息持久化
+## Features
 
-## 快速开始
+- [x] Support for MQTT Protocol V3, V4
+- [x] Forward MQTT messages to Elasticsearch.
+- [x] Support message rule routing, customize message subject to correspond to the specified Elasticsearch indexes.
+- [ ] Support message persistence
 
-### 直接安装 esmqtt 服务
+## Quick start
+
+### Install the esmqtt service
 
 ```bash     
 
@@ -21,11 +23,11 @@ esmqtt -install
 
 ```   
 
-在 linux 系统中使用 systemd 管理服务
+Use systemd to manage services on a Linux system
 
 `systemctl <start | stop | restart> esmqtt`
 
-### docker 部署 esmqtt 服务
+### docker Deploy the ESMQTT service
 
 [docker-compose.yml](./docker-compose.yml)
 
@@ -38,11 +40,11 @@ docker-compose up -d
 ```
 
 
-### 配置
+### Configuration
 
 - yaml
 
->  /etc/esmqtt.yml 文件
+>  /etc/esmqtt.yml 
 
 ```yaml
 appid: esmqtt
@@ -76,9 +78,9 @@ elastic:
   
 ```
 
-- 环境变量
+- ENVIRONMENT VARIABLE
 
-> .env 文件
+> .env 
 
 ```bash
 
@@ -106,9 +108,9 @@ ESMQTT_LOGGER_FILE_ENABLE=true
 
 ```
 
-### 消息规则
+### Message rules
 
->  /var/esmqtt/rules.json 文件
+>  /var/esmqtt/rules.json 
 
 
 ```json
@@ -123,13 +125,13 @@ ESMQTT_LOGGER_FILE_ENABLE=true
 ```
 
 
-- 程序将会在启动时加载该文件，如果文件不存在，程序将会自动订阅主题 `elastic/message/create`。索引取决于消息中指定的 `index` 字段。
-- 如果消息中和规则中都没有指定 `index` 字段值，消息将被忽略。 
-- 在使用规则时， 如果消息中没有指定 `index` 字段值，将会使用规则中的 `index` 字段值。 `spliter` 的值为 "year | month | day | hour "(或者为空), 根据日期规则生成索引名，
-比如 `testnode_message_2021-01-01`， `testnode_message_2021-01`， `testnode_message_2021`。
+- The program will load the file at startup, and if it does not exist, the program will automatically subscribe to the topic `elastic/message/create`. The index depends on the `index` field specified in the message.
+- If neither the `index` field value is specified in the message nor in the rule, the message will be ignored. 
+- When using a rule, if no `index` field value is specified in the message, the `index` field value in the rule will be used. The value of `spliter` is "year | month | day | hour" (or null), and the index name is generated according to the date rule.
+For example `testnode_message_2021-01-01`, `testnode_message_2021-01`, `testnode_message_2021`.
 
 
-### 消息模型
+### Message model
 
 ```json
 {
@@ -145,8 +147,9 @@ ESMQTT_LOGGER_FILE_ENABLE=true
 }
 ```
 
-- `data.id` 指定消息转发到的文档ID，如果消息中没有指定，将会使用内部生成的UUID。
-- `data.index` 指定消息转发到的索引，如果消息中没有指定，将会使用规则中的 `index` 字段值， 如果规则也未指定，消息将被忽略。
-- `data.payload` 为自定义对象，如果为空，消息将会被忽略。
-- `data.timestamp` 为消息时间戳，如果为空，将会使用当前时间戳。
-- `data.vector` 为消息向量，如果为空，将会使用空数组(该字段针对GPT模型设计，维度为1536，特定场景使用，可为空)。
+- `data.id` specifies the document ID that the message is forwarded to, if not specified in the message, the internally generated UUID will be used.
+- `data.index` specifies the index to which the message will be forwarded, if not specified in the message, the value of the `index` field in the rule will be used, if not specified in the rule, the message will be ignored.
+- `data.payload` is a custom object, if it is empty, the message will be ignored.
+- `data.timestamp` is the message timestamp, if it is empty, the current timestamp will be used.
+- `data.vector` is the message vector, if it is empty, an empty array will be used (this field is designed for GPT model, with dimension 1536, for specific scenarios, it can be empty).
+

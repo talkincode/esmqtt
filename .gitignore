@@ -13,3 +13,4 @@ build
 /tests/
 /esmqtt.yml
 /esmqtt-rules.json
+/docker/local/
