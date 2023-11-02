@@ -23,6 +23,10 @@ func onElasticMessage(c mqtt.Client, msg mqtt.Message) {
 	var newmsg models.ElasticMessage
 	newmsg = emsg.Data
 
+	if newmsg.Payload == nil {
+		return
+	}
+
 	rule := app.GetTopicRule(msg.Topic())
 	if rule != nil && newmsg.Index == "" && rule.Index != "" {
 		newmsg.Index = rule.Index
