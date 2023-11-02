@@ -12,3 +12,4 @@ build
 /data/
 /tests/
 /esmqtt.yml
+/esmqtt-rules.json

@@ -1,0 +1,6 @@
+[
+  {
+    "topic": "/testnode/elastic/message/create",
+    "index": "testnode_message"
+  }
+]

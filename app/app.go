@@ -43,6 +43,7 @@ type Application struct {
 	ipFind    *cziploc.IpFetch
 	esclient  *elasticsearch.Client
 	queue     *deque.Deque[models.ElasticMessage]
+	rules     []models.MessageRule
 }
 
 func GApp() *Application {
@@ -55,6 +56,19 @@ func GConfig() *config.AppConfig {
 
 func MsgQueue() *deque.Deque[models.ElasticMessage] {
 	return app.queue
+}
+
+func MsgRules() []models.MessageRule {
+	return common.DeepCopy(app.rules).([]models.MessageRule)
+}
+
+func GetTopicRule(topic string) *models.MessageRule {
+	for _, rule := range app.rules {
+		if rule.Topic == topic {
+			return &rule
+		}
+	}
+	return nil
 }
 
 func GCache() *freecache.Cache {
@@ -93,6 +107,11 @@ func (a *Application) Init(cfg *config.AppConfig) {
 	err = a.inttElastic()
 	common.Must(err)
 	log.Info("init elastic success")
+
+	a.rules = a.loadRules()
+	if len(a.rules) == 0 {
+		log.Warn("rules is empty")
+	}
 
 	a.queue = deque.New[models.ElasticMessage](100000)
 
@@ -143,6 +162,22 @@ func (a *Application) inttElastic() (err error) {
 		},
 	})
 	return err
+}
+
+func (a *Application) loadRules() (data []models.MessageRule) {
+	filepath := "esmqtt-rules.json"
+	if !common.FileExists(filepath) {
+		filepath = path.Join(a.appConfig.Workdir, "esmqtt-rules.json")
+	}
+	if !common.FileExists(filepath) {
+		log.Error("rules file not found")
+		return data
+	}
+	err := common.ReadJson(filepath, &data)
+	if err != nil {
+		log.Error("load rules error", zap.Error(err))
+	}
+	return data
 }
 
 func Release() {

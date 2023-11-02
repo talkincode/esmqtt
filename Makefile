@@ -2,7 +2,7 @@ BUILD_ORG   := talkincode
 BUILD_VERSION   := latest
 BUILD_TIME      := $(shell date "+%F %T")
 BUILD_NAME      := esmqtt
-RELEASE_VERSION := v2.0.1
+RELEASE_VERSION := v1.0.1
 SOURCE          := main.go
 RELEASE_DIR     := ./release
 COMMIT_SHA1     := $(shell git show -s --format=%H )

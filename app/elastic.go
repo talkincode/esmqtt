@@ -7,9 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v8/esapi"
+	"github.com/talkincode/esmqtt/common"
 	"github.com/talkincode/esmqtt/common/zaplog/log"
 	"github.com/talkincode/esmqtt/models"
 )
@@ -22,7 +24,6 @@ func (a *Application) createMapping(indexName string) error {
 	}
 	// 如果索引已存在，直接返回
 	if res.StatusCode == 200 {
-		log.Info("Index already exists.")
 		return nil
 	}
 
@@ -121,43 +122,48 @@ func (a *Application) BatchPost(indexName string, messages []models.ElasticMessa
 }
 
 func (a *Application) startPostTask() {
-	var result = make(map[string][]models.ElasticMessage)
+
 	send := func(data map[string][]models.ElasticMessage) error {
-		for index, message := range data {
-			err := a.BatchPost(index, message)
+		for index, messages := range data {
+			err := a.BatchPost(index, messages)
 			if err != nil {
-				log.Errorf("batch post elastic message error: %s", err)
+				log.Errorf("batch post elastic messages error: %s", err)
 				return err
 			} else {
-				log.Infof("batch post elastic message success: %s %d", index, len(message))
+				log.Infof("batch post elastic messages success: %s %d", index, len(messages))
 			}
 		}
 		return nil
 	}
 
 	log.Info("Start post task")
+	var result = make(map[string][]models.ElasticMessage)
 	var lastPostTime = time.Now().Unix()
+	var counter int32 = 0
 	for {
-		msg := MsgQueue().PopFront()
-		if msg == nil {
-			time.Sleep(1 * time.Second)
-			continue
-		}
 
-		if _, ok := result[msg.Index]; !ok {
-			result[msg.Index] = make([]models.ElasticMessage, 0)
-		}
-		result[msg.Index] = append(result[msg.Index], *msg)
-
-		if len(result) >= 1000 || time.Now().Unix()-lastPostTime >= 1 {
+		if len(result) > 0 && counter >= 2000 || time.Now().Unix()-lastPostTime >= 3 {
 			lastPostTime = time.Now().Unix()
+			atomic.StoreInt32(&counter, 0)
+			sresult := common.DeepCopy(result).(map[string][]models.ElasticMessage)
+			result = make(map[string][]models.ElasticMessage)
 			_ = a.taskPool.Submit(func() {
-				err := send(result)
+				err := send(sresult)
 				if err != nil {
 					log.Errorf("send message error: %s", err)
 				}
 			})
-			time.Sleep(1 * time.Second)
+		}
+
+		msg := MsgQueue().PopFront()
+		if msg != nil {
+			atomic.AddInt32(&counter, 1)
+			if _, ok := result[msg.Index]; !ok {
+				result[msg.Index] = make([]models.ElasticMessage, 0)
+			}
+			result[msg.Index] = append(result[msg.Index], *msg)
+		} else {
+			time.Sleep(100 * time.Millisecond)
 		}
 	}
 }

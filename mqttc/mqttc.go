@@ -36,8 +36,20 @@ func Publish(qos int, topic string, payload interface{}) error {
 // 连接时订阅主题
 func onConnect(client mqtt.Client) {
 	log.Info("mqtt connect success")
-	if token := client.Subscribe(MqttElasticMessageCreate, 1, onElasticMessage); token.Wait() && token.Error() != nil {
-		log.Errorf("onConnect subscribe MqttTeamsdnsInform error: %s", token.Error())
+	if len(app.MsgRules()) == 0 {
+		if token := client.Subscribe(MqttElasticMessageCreate, 1, onElasticMessage); token.Wait() && token.Error() != nil {
+			log.Errorf("onConnect subscribe %s  error: %s", MqttElasticMessageCreate, token.Error())
+		} else {
+			log.Infof("onConnect subscribe %s success", MqttElasticMessageCreate)
+		}
+	} else {
+		for _, rule := range app.MsgRules() {
+			if token := client.Subscribe(rule.Topic, 1, onElasticMessage); token.Wait() && token.Error() != nil {
+				log.Errorf("onConnect subscribe %s  error: %s", rule.Topic, token.Error())
+			} else {
+				log.Infof("onConnect subscribe %s success", rule.Topic)
+			}
+		}
 	}
 }
 
