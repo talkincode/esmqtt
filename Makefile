@@ -23,13 +23,13 @@ buildpre:
 fastpub:
 	make build
 	docker buildx build --build-arg GoArch="amd64" --platform=linux/amd64 -t \
-	${BUILD_ORG}/esmqtt:latest .
+	${BUILD_ORG}/esmqtt:latest . -f Dockerfile.local
 	docker push ${BUILD_ORG}/esmqtt:latest
 
 fastpubarm:
 	make build-arm64
 	docker buildx build --build-arg GoArch="arm64" --platform=linux/arm64 -t \
-	${BUILD_ORG}/esmqtt-arm64:latest .
+	${BUILD_ORG}/esmqtt-arm64:latest .  -f Dockerfile.local
 	docker push ${BUILD_ORG}/esmqtt-arm64:latest
 
 build:

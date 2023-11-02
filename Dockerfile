@@ -1,8 +1,16 @@
+FROM golang:1.21.0-buster AS builder
+
+COPY . /src
+WORKDIR /src
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags \
+     '-s -w -extldflags "-static"'  -o /esmqtt main.go
+
 FROM alpine:3.17
 
-WORKDIR /var/esmqtt
+RUN apk add --no-cache curl
 
-COPY release/esmqtt /usr/local/bin/esmqtt
+COPY --from=builder /esmqtt /usr/local/bin/esmqtt
 
 RUN chmod +x /usr/local/bin/esmqtt
 
