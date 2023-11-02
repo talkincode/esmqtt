@@ -114,7 +114,7 @@ ESMQTT_LOGGER_FILE_ENABLE=true
 ```json
 [
   {
-    "topic": "/testnode/elastic/message/create",
+    "topic": "testnode/elastic/message/create",
     "index": "testnode_message",
     "spliter": "day"
   }
@@ -123,7 +123,7 @@ ESMQTT_LOGGER_FILE_ENABLE=true
 ```
 
 
-- 程序将会在启动时加载该文件，如果文件不存在，程序将会自动订阅主题 `/elastic/message/create`。索引取决于消息中指定的 `index` 字段。
+- 程序将会在启动时加载该文件，如果文件不存在，程序将会自动订阅主题 `elastic/message/create`。索引取决于消息中指定的 `index` 字段。
 - 如果消息中和规则中都没有指定 `index` 字段值，消息将被忽略。 
 - 在使用规则时， 如果消息中没有指定 `index` 字段值，将会使用规则中的 `index` 字段值。 `spliter` 的值为 "year | month | day | hour "(或者为空), 根据日期规则生成索引名，
 比如 `testnode_message_2021-01-01`， `testnode_message_2021-01`， `testnode_message_2021`。
