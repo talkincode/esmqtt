@@ -108,7 +108,7 @@ ESMQTT_LOGGER_FILE_ENABLE=true
 
 ### 消息规则
 
->  /var/esmqtt/rules.json 文件
+>  /var/esmqtt/esmqtt-rules.json 文件
 
 
 ```json
