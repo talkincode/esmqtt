@@ -41,7 +41,17 @@ func (a *Application) createMapping(indexName string) error {
 				"timestamp": {
 					"type": "date",
 					"format": "epoch_millis"
-				}
+				},
+				"@timestamp": {
+					"type": "date",
+					"format": "strict_date_optional_time||epoch_millis"
+				},
+				"clientid": {
+					"type": "keyword"
+				},
+				"Node": {
+					"type": "long"
+				},	
 			}
 		}
 	}`
@@ -94,9 +104,12 @@ func (a *Application) BatchPost(indexName string, messages []models.ElasticMessa
 			return err
 		}
 		body := map[string]interface{}{
-			"vector":    message.Vector,
-			"payload":   objdata,
-			"timestamp": message.Timestamp,
+			"vector":     message.Vector,
+			"payload":    objdata,
+			"timestamp":  message.Timestamp,
+			"@timestamp": message.AtTime,
+			"clientid":   message.ClientID,
+			"Node":       message.Node,
 		}
 		if err := json.NewEncoder(&buf).Encode(body); err != nil {
 			return err
