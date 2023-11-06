@@ -51,7 +51,7 @@ func (a *Application) createMapping(indexName string) error {
 				},
 				"Node": {
 					"type": "long"
-				},	
+				}	
 			}
 		}
 	}`
