@@ -12,7 +12,7 @@ import (
 var client mqtt.Client
 
 const (
-	MqttElasticMessageCreate = "elastic/message/create"
+	MqttElasticMessageCreate = "elastic/message/#"
 )
 
 func Start() error {

@@ -1,6 +1,7 @@
 package mqttc
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -13,7 +14,12 @@ import (
 
 func onElasticMessage(c mqtt.Client, msg mqtt.Message) {
 	payload := msg.Payload()
-	// log.Infof("onTeamsdnsClientMetrics %s %s", msg.Topic(), string(payload))
+	payloadStr := string(payload)
+	if !json.Valid([]byte(payloadStr)) {
+		//此处可以记录控制日志，或者根据控制命令实现一些功能，比如重启，升级等，目前只是简单的打印
+		fmt.Println("The payload is not valid JSON, message skipped.")
+		return
+	}
 	emsg, err := DecodeMessage[models.ElasticMessage](payload)
 	if err != nil {
 		log.Errorf("onElasticMessage decode error: %s", err)
